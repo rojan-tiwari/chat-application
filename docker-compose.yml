@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend  # Path to your frontend Dockerfile
+    image: your-dockerhub-username/frontend-image:latest  # Optionally, if you want to pull from Docker Hub
+    ports:
+      - "3000:3000"  # Map container port 3000 to host port 3000
+    depends_on:
+      - backend  # Ensure backend service is started before frontend
+
+  backend:
+    build:
+      context: ./backend  # Path to your backend Dockerfile
+    image: your-dockerhub-username/backend-image:latest  # Optionally, if you want to pull from Docker Hub
+    ports:
+      - "8080:8080"  # Map container port 8080 to host port 8080
