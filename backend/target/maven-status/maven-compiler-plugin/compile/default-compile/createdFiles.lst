@@ -1,0 +1,6 @@
+com/chatapp/model/entity/User.class
+com/chatapp/repository/UserRepository.class
+com/chatapp/controller/AuthController.class
+com/chatapp/ChatApplication.class
+com/chatapp/model/entity/record/LoginRequest.class
+com/chatapp/service/UserService.class
