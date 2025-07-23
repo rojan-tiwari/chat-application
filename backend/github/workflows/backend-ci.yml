@@ -44,4 +44,5 @@ jobs:
         run: |
           docker build -t 904578342/chat-backend:latest .
           docker push 904578342/chat-backend:latest
+        working-directory: ./backend
 
