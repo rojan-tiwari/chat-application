@@ -2,8 +2,9 @@ name: Frontend CI - Docker Build & Push
 
 on:
   push:
-    branches:
-      - release-2025.07.00
+    branches: [ "release-2025.07.00" ]
+  pull_request:
+    branches: [ "release-2025.07.00" ]
 
 jobs:
   build-docker-push:
