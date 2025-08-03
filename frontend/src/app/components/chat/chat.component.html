@@ -1,0 +1,16 @@
+<div class="chat-container">
+  <div class="messages">
+    <div *ngFor="let msg of messages" class="message">{{ msg }}</div>
+  </div>
+
+  <form (submit)="sendMessage(); $event.preventDefault()">
+    <input 
+      type="text" 
+      [(ngModel)]="messageInput" 
+      name="message" 
+      placeholder="Type your message" 
+      required 
+    />
+    <button type="submit">Send</button>
+  </form>
+</div>
