@@ -43,9 +43,10 @@ export class LoginComponent implements OnInit {
     this.isLoading = true; 
     this.authService.login(this.loginRequest).subscribe({
       next: (response) => {
-        console.log(response);
+        const username = response.username || this.loginRequest.username;
+        this.authService.setCurrentUser(username);
         this.isLoading = false; 
-        this.router.navigate(['/register']); 
+        this.router.navigate(['/chat']); 
       },
       error: (error) => {
         console.error(error);
