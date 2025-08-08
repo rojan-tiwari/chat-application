@@ -1,16 +1,172 @@
-<div class="chat-container">
-  <div class="messages">
-    <div *ngFor="let msg of messages" class="message">{{ msg }}</div>
+<div class="chat-app">
+  <!-- Chat Header -->
+  <div class="chat-header">
+    <div class="header-left">
+      <div class="logo-container">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <h1 class="app-title">chat-app</h1>
+      </div>
+      <div class="chat-info">
+        <span class="room-name">General Chat</span>
+        <span class="active-count">{{ onlineUsers.length }} online</span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="header-btn" title="Settings">
+        <!-- settings icon -->
+      </button>
+      <button class="header-btn" title="More options">
+        <!-- more icon -->
+      </button>
+    </div>
   </div>
 
-  <form (submit)="sendMessage(); $event.preventDefault()">
-    <input 
-      type="text" 
-      [(ngModel)]="messageInput" 
-      name="message" 
-      placeholder="Type your message" 
-      required 
-    />
-    <button type="submit">Send</button>
-  </form>
+  <!-- Chat Body -->
+  <div class="chat-body">
+    <div class="messages-container">
+      <div class="messages" #messagesContainer>
+
+        <!-- Chat Messages -->
+        <div *ngFor="let msg of messages" class="message-wrapper" [ngClass]="getMessageClass(msg)">
+
+          <!-- Other User Message -->
+          <ng-container *ngIf="!msg.isOwn">
+            <div class="message other-msg">
+              <div class="avatar">
+                <img [src]="msg.avatar || getDefaultAvatar()" [alt]="getAvatarAltText(msg.username)" />
+              </div>
+              <div class="message-content">
+                <div class="message-header">
+                  <span class="username">{{ msg.username }}</span>
+                  <span class="timestamp">{{ msg.timestamp | date: 'short' }}</span>
+                </div>
+                <div class="message-bubble other-bubble">
+                  <p>{{ msg.text }}</p>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Own Message -->
+          <ng-container *ngIf="msg.isOwn">
+            <div class="message own-msg">
+              <div class="message-content">
+                <div class="message-header">
+                  <span class="timestamp">{{ msg.timestamp | date: 'short' }}</span>
+                  <span class="message-status">
+                    <ng-container [ngSwitch]="msg.status">
+                      <svg *ngSwitchCase="'sent'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                      </svg>
+                      <svg *ngSwitchCase="'delivered'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                        <polyline points="16,10 21,15 26,10"/>
+                      </svg>
+                    </ng-container>
+                  </span>
+                </div>
+                <div class="message-bubble own-bubble">
+                  <p>{{ msg.text }}</p>
+                </div>
+              </div>
+              <div class="avatar">
+                <img [src]="currentUser.avatar || getDefaultAvatar()" [alt]="getAvatarAltText(currentUser.username)" />
+              </div>
+            </div>
+          </ng-container>
+
+        </div>
+
+        <!-- Typing Indicator -->
+        <div *ngIf="typingUsers.length > 0" class="typing-indicator">
+          <div class="avatar">
+            <div class="typing-avatar"></div>
+          </div>
+          <div class="typing-content">
+            <div class="typing-bubble">
+              <div class="typing-dots">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+            <span class="typing-text">{{ getTypingText() }}</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Message Input -->
+      <div class="message-input-container">
+        <form class="message-form" (submit)="onMessageSubmit($event)">
+          <div class="input-wrapper">
+            <button type="button" class="attachment-btn" title="Attach file">
+              <!-- icon -->
+            </button>
+
+            <input
+              type="text"
+              [(ngModel)]="messageInput"
+              name="message"
+              placeholder="Type a message..."
+              required
+              class="message-input"
+              (keyup)="onTyping()"
+              (focus)="onInputFocus()"
+              (blur)="onInputBlur()"
+              #messageInputRef
+            />
+
+            <button type="button" class="emoji-btn" title="Add emoji">
+              <!-- emoji icon -->
+            </button>
+          </div>
+
+          <button
+            type="submit"
+            class="send-btn"
+            [disabled]="!messageInput.trim()"
+            [ngClass]="{ 'active': messageInput.trim() }"
+          >
+            <!-- send icon -->
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Sidebar: Online Users -->
+    <div class="sidebar" [ngClass]="{ 'sidebar-open': sidebarOpen }">
+      <div class="sidebar-header">
+        <h3>Online Users</h3>
+        <button class="close-sidebar" (click)="toggleSidebar()">
+          <!-- close icon -->
+        </button>
+      </div>
+
+      <div class="users-list">
+        <div *ngFor="let user of onlineUsers" class="user-item">
+          <div class="user-avatar">
+            <img [src]="user.avatar || getDefaultAvatar()" [alt]="getAvatarAltText(user.username)" />
+            <div class="status-indicator" [ngClass]="user.status"></div>
+          </div>
+          <div class="user-info">
+            <span class="user-name">{{ user.username }}</span>
+            <span class="user-status">{{ user.statusText }}</span>
+          </div>
+          <div class="user-actions">
+            <button class="action-btn" title="Direct message">
+              <!-- message icon -->
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Sidebar Toggle -->
+  <button class="mobile-sidebar-toggle" (click)="toggleSidebar()" *ngIf="!sidebarOpen">
+    <!-- hamburger icon -->
+    <span class="online-count">{{ onlineUsers.length }}</span>
+  </button>
 </div>
