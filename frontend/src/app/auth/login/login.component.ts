@@ -43,6 +43,9 @@ export class LoginComponent implements OnInit {
     this.isLoading = true; 
     this.authService.login(this.loginRequest).subscribe({
       next: (response) => {
+        if(response.data?.token){
+          localStorage.setItem('token', response.data.token); 
+        }
         const username = response.username || this.loginRequest.username;
         this.authService.setCurrentUser(username);
         this.isLoading = false; 

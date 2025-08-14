@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ChatService } from '../../services/chat.service';
-import { AuthService } from '../../services/auth.service';
+import { ChatService } from '../services/chat.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-chat',
@@ -43,7 +43,7 @@ export class ChatComponent implements OnInit {
     this.currentUser.username = this.authService.getCurrentUser() || 'Anonymous';
 
     if (typeof window !== 'undefined') {
-      this.chatService.connect(`ws://localhost:8080/chat?username=${this.currentUser.username}`);
+      this.chatService.connect(`ws://localhost:8080/chat?username=${this.currentUser.username}&token=${localStorage.getItem('token')}`);
 
       // subscribe to server broadcast
       this.chatService.onMessage().subscribe((data) => {
