@@ -1,7 +1,9 @@
 package com.chatapp.controller;
 
+import com.chatapp.configuration.jwt.JwtUtil;
 import com.chatapp.exception.UsernameAlreadyExistsException;
 import com.chatapp.model.entity.User;
+import com.chatapp.model.entity.record.AuthResponse;
 import com.chatapp.model.entity.record.LoginRequest;
 import com.chatapp.service.UserService;
 import com.chatapp.util.BaseResponse;
@@ -21,6 +23,9 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @PostMapping("/register")
     public ResponseEntity<BaseResponse<String>> registerUser(@RequestBody User user) {
         try {
@@ -38,7 +43,11 @@ public class AuthController {
         try {
             Optional<User> user = userService.findByUsername(loginRequest.username(), loginRequest.password());
             if (user.isPresent()) {
-                return ResponseEntity.ok(BaseResponse.success(user,"Login was successful"));
+                String token = jwtUtil.generateToken(user.get().getUsername());
+                return ResponseEntity.ok(BaseResponse.success(
+                    new AuthResponse(token, user.get().getUsername()),
+                    "Login was successful"
+                ));
             } else {
                 return ResponseEntity.badRequest().body(BaseResponse.error(400, "Invalid username or password"));
             }
@@ -46,4 +55,5 @@ public class AuthController {
             return ResponseEntity.badRequest().body(BaseResponse.error(400, e.getMessage()));
         }
     }
+
 }

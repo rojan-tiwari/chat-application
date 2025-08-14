@@ -13,6 +13,11 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
-
+app:
+  jwt:
+      secret: "u89asdf8a7sdf91232crtrtRRR234234fsdfsdfsfgr5656asd"
+      issuer: "chat-app"
+      access-token-ttl-minutes: 60
+      refresh-token-ttl-days: 7
 server:
   port: 8080
